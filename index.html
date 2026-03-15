@@ -318,13 +318,13 @@
         </div>
         
         <div class="suggestions" id="suggestions">
+            <button class="suggestion-btn" onclick="askQuestion('C\'est quoi l\'énergie solaire ?')">Énergie solaire</button>
+            <button class="suggestion-btn" onclick="askQuestion('Les deux types d\'énergie solaire')">2 types solaire</button>
             <button class="suggestion-btn" onclick="askQuestion('Différence entre photovoltaïque et thermique')">PV vs Thermique</button>
             <button class="suggestion-btn" onclick="askQuestion('Comment fonctionne le photovoltaïque ?')">Principe PV</button>
             <button class="suggestion-btn" onclick="askQuestion('Composants installation photovoltaïque')">Composants PV</button>
             <button class="suggestion-btn" onclick="askQuestion('Rôle de l\'onduleur')">Onduleur</button>
             <button class="suggestion-btn" onclick="askQuestion('Rôle des batteries')">Batteries</button>
-            <button class="suggestion-btn" onclick="askQuestion('Panneaux solaires')">Panneaux</button>
-            <button class="suggestion-btn" onclick="askQuestion('Cellule photovoltaïque')">Cellule PV</button>
             <button class="suggestion-btn" onclick="askQuestion('Comment fonctionne le solaire thermique ?')">Thermique</button>
             <button class="suggestion-btn" onclick="askQuestion('Composants chauffe-eau solaire')">Chauffe-eau</button>
         </div>
@@ -338,6 +338,18 @@
     <script>
         // ===== BASE DE CONNAISSANCES COMPLÈTE =====
         const knowledgeBase = {
+            
+            // DÉFINITION ÉNERGIE SOLAIRE (NOUVEAU !)
+            "definition_solaire": {
+                keywords: ["c'est quoi", "qu'est-ce", "définition", "énergie solaire", "solaire"],
+                answer: "**C'EST QUOI L'ÉNERGIE SOLAIRE ?** ☀️\n\n📚 **DÉFINITION** :\nL'énergie solaire est l'énergie qui provient du **SOLEIL**. C'est une source d'énergie **RENOUVELABLE** et **INÉPUISABLE** à l'échelle humaine.\n\n☀️ **ORIGINE** :\nLe soleil émet en permanence de la lumière et de la chaleur grâce aux réactions nucléaires qui se produisent en son cœur.\n\n🌍 **SUR TERRE** :\nCette énergie nous parvient sous forme de :\n• **LUMIÈRE** (rayonnement visible)\n• **CHALEUR** (rayonnement infrarouge)\n\n💡 **TRANSFORMATION** :\nNous pouvons capter et transformer cette énergie solaire de **DEUX MANIÈRES** :\n\n1️⃣ **Photovoltaïque** : LUMIÈRE → ÉLECTRICITÉ\n2️⃣ **Thermique** : CHALEUR → CHAUFFAGE\n\n✅ **AVANTAGES** :\n• Renouvelable (le soleil brille depuis 4,6 milliards d'années !)\n• Gratuite et disponible partout\n• Propre (pas de CO2 à l'usage)\n• Inépuisable"
+            },
+            
+            // DEUX TYPES D'ÉNERGIE SOLAIRE (NOUVEAU !)
+            "deux_types": {
+                keywords: ["deux types", "2 types", "deux manières", "deux façons", "types solaire"],
+                answer: "**LES DEUX TYPES D'ÉNERGIE SOLAIRE** ☀️\n\nL'énergie solaire peut être transformée de **DEUX MANIÈRES** différentes :\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n1️⃣ **ÉNERGIE SOLAIRE PHOTOVOLTAÏQUE** ⚡\n\n🔍 **Ce qu'on capte** : La LUMIÈRE du soleil\n\n⚙️ **Ce qu'on produit** : De l'ÉLECTRICITÉ\n\n💡 **Comment** : Les panneaux solaires transforment la lumière en électricité grâce aux cellules photovoltaïques\n\n🏠 **Utilisation** : Alimenter les appareils électriques, l'éclairage, les prises\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n2️⃣ **ÉNERGIE SOLAIRE THERMIQUE** 🌡️\n\n🔍 **Ce qu'on capte** : La CHALEUR du soleil\n\n⚙️ **Ce qu'on produit** : De la CHALEUR (eau chaude)\n\n💡 **Comment** : Les capteurs thermiques chauffent directement un liquide\n\n🏠 **Utilisation** : Eau chaude sanitaire, chauffage des bâtiments\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n🌞 **EN RÉSUMÉ** :\n• **Photovoltaïque** = Panneaux BLEUS → Électricité pour brancher tes appareils\n• **Thermique** = Capteurs NOIRS → Eau chaude pour te doucher\n\n💡 **Même source (le soleil), deux utilisations différentes !**"
+            },
             
             // COMPARAISON PV vs THERMIQUE
             "comparaison": {
@@ -493,7 +505,7 @@
                 return bestMatch;
             }
             
-            return "🤔 Désolé, je suis spécialisé UNIQUEMENT en énergie solaire !\n\nJe peux t'aider sur :\n\n☀️⚡ **PHOTOVOLTAÏQUE** :\n• Principe de fonctionnement\n• Composants (panneaux, onduleur, batteries...)\n• Cellules photovoltaïques\n\n🌡️💧 **THERMIQUE** :\n• Principe de fonctionnement\n• Composants chauffe-eau solaire\n• Capteurs et ballon\n\n⚖️ **COMPARAISON** :\n• Différence PV vs Thermique\n• Avantages et inconvénients\n\nClique sur une suggestion ci-dessous ! ☀️";
+            return "🤔 Désolé, je suis spécialisé UNIQUEMENT en énergie solaire !\n\nJe peux t'aider sur :\n\n☀️ **DÉFINITIONS** :\n• C'est quoi l'énergie solaire ?\n• Les deux types d'énergie solaire\n\n⚡ **PHOTOVOLTAÏQUE** :\n• Principe de fonctionnement\n• Composants (panneaux, onduleur, batteries...)\n• Cellules photovoltaïques\n\n🌡️ **THERMIQUE** :\n• Principe de fonctionnement\n• Composants chauffe-eau solaire\n• Capteurs et ballon\n\n⚖️ **COMPARAISON** :\n• Différence PV vs Thermique\n• Avantages et inconvénients\n\nClique sur une suggestion ci-dessous ! ☀️";
         }
         
         function sendMessage() {

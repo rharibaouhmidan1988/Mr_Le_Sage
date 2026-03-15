@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Le Sage - Expert Solaire</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: transparent;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 0;
+        }
+        
+        .chatbot-container {
+            width: 900px;
+            max-width: 100%;
+            height: 650px;
+            background: rgba(44, 62, 80, 0.85);
+            backdrop-filter: blur(5px);
+            border-radius: 30px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            display: flex;
+            flex-direction: column;
+            border: 4px solid #F39C12;
+            overflow: hidden;
+        }
+        
+        .chat-header {
+            background: linear-gradient(135deg, #F39C12, #E67E22);
+            padding: 18px 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            border-bottom: 3px solid white;
+        }
+        
+        .sage-avatar {
+            width: 60px;
+            height: 60px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.2rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            border: 3px solid #F39C12;
+            color: #2C3E50;
+        }
+        
+        .chat-title {
+            flex: 1;
+        }
+        
+        .chat-title h2 {
+            color: white;
+            font-size: 1.5rem;
+            font-weight: 800;
+            text-shadow: 1px 1px 0 rgba(0,0,0,0.2);
+        }
+        
+        .chat-title p {
+            color: rgba(255,255,255,0.9);
+            font-size: 0.9rem;
+            margin-top: 3px;
+        }
+        
+        .chat-messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            background: rgba(0,0,0,0.2);
+        }
+        
+        .chat-messages::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        .chat-messages::-webkit-scrollbar-track {
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+        }
+        
+        .chat-messages::-webkit-scrollbar-thumb {
+            background: #F39C12;
+            border-radius: 10px;
+        }
+        
+        .message {
+            display: flex;
+            gap: 10px;
+            animation: slideIn 0.3s;
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .message.bot {
+            align-self: flex-start;
+        }
+        
+        .message.user {
+            align-self: flex-end;
+            flex-direction: row-reverse;
+        }
+        
+        .message-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            font-size: 1.3rem;
+            border: 2px solid white;
+        }
+        
+        .message.bot .message-avatar {
+            background: #F39C12;
+        }
+        
+        .message.user .message-avatar {
+            background: #3498DB;
+        }
+        
+        .message-bubble {
+            max-width: 70%;
+            padding: 12px 18px;
+            border-radius: 20px;
+            line-height: 1.5;
+            font-size: 0.95rem;
+            border: 2px solid white;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        
+        .message.bot .message-bubble {
+            background: white;
+            color: #2C3E50;
+            border-bottom-left-radius: 5px;
+        }
+        
+        .message.user .message-bubble {
+            background: #3498DB;
+            color: white;
+            border-bottom-right-radius: 5px;
+        }
+        
+        .suggestions {
+            padding: 10px 20px;
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            max-height: 100px;
+            overflow-y: auto;
+            background: rgba(0,0,0,0.3);
+            border-top: 1px solid rgba(255,255,255,0.2);
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+        }
+        
+        .suggestion-btn {
+            background: rgba(243, 156, 18, 0.2);
+            color: white;
+            border: 2px solid #F39C12;
+            padding: 6px 12px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+        
+        .suggestion-btn:hover {
+            background: #F39C12;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+        
+        .chat-input {
+            padding: 15px 20px;
+            background: rgba(0,0,0,0.3);
+            display: flex;
+            gap: 10px;
+        }
+        
+        .chat-input input {
+            flex: 1;
+            padding: 12px 18px;
+            border: 2px solid #F39C12;
+            border-radius: 25px;
+            font-size: 0.95rem;
+            background: white;
+            color: #2C3E50;
+        }
+        
+        .chat-input input:focus {
+            outline: none;
+            border-color: #E67E22;
+            box-shadow: 0 0 0 3px rgba(243, 156, 18, 0.2);
+        }
+        
+        .chat-input button {
+            padding: 12px 25px;
+            background: linear-gradient(135deg, #F39C12, #E67E22);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 2px solid white;
+            box-shadow: 0 4px 0 #b87c1f;
+        }
+        
+        .chat-input button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 0 #b87c1f;
+        }
+        
+        .typing-indicator {
+            display: none;
+            padding: 10px 15px;
+            background: white;
+            border-radius: 20px;
+            width: fit-content;
+            border: 2px solid #F39C12;
+        }
+        
+        .typing-indicator.show {
+            display: block;
+        }
+        
+        .typing-indicator span {
+            height: 8px;
+            width: 8px;
+            background: #F39C12;
+            border-radius: 50%;
+            display: inline-block;
+            margin: 0 2px;
+            animation: bounce 1.4s infinite;
+        }
+        
+        .typing-indicator span:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+        
+        .typing-indicator span:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+        
+        @keyframes bounce {
+            0%, 60%, 100% {
+                transform: translateY(0);
+            }
+            30% {
+                transform: translateY(-8px);
+            }
+        }
+        
+        .welcome-message {
+            background: rgba(243, 156, 18, 0.15);
+            border: 2px solid #F39C12;
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            color: white;
+            margin-bottom: 10px;
+        }
+        
+        .welcome-message h3 {
+            font-size: 1.3rem;
+            margin-bottom: 10px;
+            color: #F39C12;
+        }
+        
+        .welcome-message p {
+            color: rgba(255,255,255,0.9);
+            line-height: 1.5;
+        }
+    </style>
+</head>
+<body>
+    <div class="chatbot-container">
+        <div class="chat-header">
+            <div class="sage-avatar">👨‍🏫</div>
+            <div class="chat-title">
+                <h2>Le Sage - Expert Solaire</h2>
+                <p>Spécialiste de l'énergie photovoltaïque et thermique</p>
+            </div>
+        </div>
+        
+        <div class="chat-messages" id="chatMessages">
+            <div class="welcome-message">
+                <h3>☀️ Bienvenue dans mon laboratoire solaire !</h3>
+                <p>Je suis Le Sage, expert en énergie solaire. Je peux répondre à toutes tes questions sur le photovoltaïque et le thermique !</p>
+            </div>
+        </div>
+        
+        <div class="suggestions" id="suggestions">
+            <button class="suggestion-btn" onclick="askQuestion('Différence entre photovoltaïque et thermique')">PV vs Thermique</button>
+            <button class="suggestion-btn" onclick="askQuestion('Comment fonctionne le photovoltaïque ?')">Principe PV</button>
+            <button class="suggestion-btn" onclick="askQuestion('Composants installation photovoltaïque')">Composants PV</button>
+            <button class="suggestion-btn" onclick="askQuestion('Rôle de l\'onduleur')">Onduleur</button>
+            <button class="suggestion-btn" onclick="askQuestion('Rôle des batteries')">Batteries</button>
+            <button class="suggestion-btn" onclick="askQuestion('Panneaux solaires')">Panneaux</button>
+            <button class="suggestion-btn" onclick="askQuestion('Cellule photovoltaïque')">Cellule PV</button>
+            <button class="suggestion-btn" onclick="askQuestion('Comment fonctionne le solaire thermique ?')">Thermique</button>
+            <button class="suggestion-btn" onclick="askQuestion('Composants chauffe-eau solaire')">Chauffe-eau</button>
+        </div>
+        
+        <div class="chat-input">
+            <input type="text" id="userInput" placeholder="Pose ta question sur l'énergie solaire..." onkeypress="handleKeyPress(event)">
+            <button onclick="sendMessage()">📤 Envoyer</button>
+        </div>
+    </div>
+    
+    <script>
+        // ===== BASE DE CONNAISSANCES COMPLÈTE =====
+        const knowledgeBase = {
+            
+            // COMPARAISON PV vs THERMIQUE
+            "comparaison": {
+                keywords: ["différence", "comparaison", "comparer", "vs", "versus"],
+                answer: "**PHOTOVOLTAÏQUE ⚡ vs THERMIQUE 🌡️**\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n☀️ **PHOTOVOLTAÏQUE** :\n• Capte la LUMIÈRE du soleil\n• Produit de l'ÉLECTRICITÉ\n• Usage : appareils électriques, éclairage\n• Stockage : BATTERIES\n• Composant clé : ONDULEUR\n• Rendement : 15-20%\n\n🌡️ **THERMIQUE** :\n• Capte la CHALEUR du soleil\n• Produit de la CHALEUR\n• Usage : eau chaude sanitaire, chauffage\n• Stockage : BALLON d'eau chaude\n• Composant clé : CIRCULATEUR\n• Rendement : 60-80%\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n💡 **EN RÉSUMÉ** :\n• PV = Panneaux bleus → Électricité pour prises\n• Thermique = Capteurs noirs → Eau chaude pour douches\n\n❌ Le thermique ne produit PAS d'électricité !"
+            },
+            
+            // PHOTOVOLTAÏQUE - Principe
+            "pv_principe": {
+                keywords: ["photovoltaïque", "pv", "principe", "comment", "fonctionne"],
+                answer: "**ÉNERGIE SOLAIRE PHOTOVOLTAÏQUE** ☀️⚡\n\n📚 **Définition** :\n'Photo' (lumière) + 'Volta' (électricité)\n→ Transformation DIRECTE de la LUMIÈRE en ÉLECTRICITÉ\n\n⚙️ **Fonctionnement** :\n\n1️⃣ Les **photons** (lumière) frappent les cellules photovoltaïques\n\n2️⃣ Les **électrons** se mettent en mouvement → Courant continu (DC)\n\n3️⃣ L'**onduleur** transforme DC en AC (alternatif)\n\n4️⃣ L'électricité alimente les maisons ou le réseau\n\n💡 **Cellule** : matériau semi-conducteur (silicium) avec deux parties (type n et type p)"
+            },
+            
+            // COMPOSANTS PHOTOVOLTAÏQUE
+            "composants_pv": {
+                keywords: ["composants", "constituants", "éléments", "installation", "parties"],
+                answer: "**CONSTITUANTS INSTALLATION PHOTOVOLTAÏQUE** 🏭⚡\n\n1️⃣ **PANNEAUX SOLAIRES** :\n• Captent les rayons du soleil\n• Produisent du courant CONTINU (DC)\n• Cellules en silicium\n\n2️⃣ **ONDULEUR** :\n• Transforme DC en AC (alternatif)\n• Optimise la production\n• Assure la sécurité\n\n3️⃣ **BATTERIES** (optionnel) :\n• Stockent l'énergie pour la nuit\n• Permettent l'autoconsommation\n\n4️⃣ **RÉGULATEUR** (si batteries) :\n• Protège contre surcharge\n• Protège contre décharge complète\n\n5️⃣ **COMPTEUR** :\n• Mesure l'énergie produite\n• Mesure l'énergie consommée\n\n6️⃣ **CÂBLES ÉLECTRIQUES** :\n• Relient tous les composants\n• Transportent le courant\n\n7️⃣ **SYSTÈME DE MONTAGE** :\n• Supporte les panneaux\n• Inclinaison optimale\n\n8️⃣ **RÉSEAU ÉLECTRIQUE** :\n• Distribue l'électricité"
+            },
+            
+            // ONDULEUR
+            "onduleur": {
+                keywords: ["onduleur", "transforme", "dc", "ac", "continu", "alternatif"],
+                answer: "**RÔLE DE L'ONDULEUR** 🔄⚡\n\n🔧 **FONCTION PRINCIPALE** :\nTransforme le courant CONTINU (DC) des panneaux en courant ALTERNATIF (AC) utilisable dans nos maisons.\n\n💡 **POURQUOI ?**\n• Panneaux produisent du DC (comme les piles)\n• Nos appareils fonctionnent en AC\n• Sans onduleur, pas d'utilisation possible !\n\n⚙️ **AUTRES FONCTIONS** :\n• **MPPT** : optimise la production\n• **Sécurité** : coupure automatique si problème\n• **Monitoring** : suivi de production\n\n📊 **TYPES** :\n• Central : un pour tous les panneaux\n• Micro-onduleurs : un par panneau\n• Hybride : avec gestion batteries\n\n💡 L'onduleur est le \"cerveau\" de l'installation !"
+            },
+            
+            // BATTERIES
+            "batteries": {
+                keywords: ["batterie", "batteries", "stockage", "accumulateur"],
+                answer: "**RÔLE DES BATTERIES** 🔋\n\n💡 **FONCTION** :\nStockent l'électricité des panneaux pour utilisation ultérieure (nuit, jours nuageux).\n\n🔋 **POURQUOI STOCKER ?**\n• Le soleil ne brille pas la nuit\n• Production peut dépasser consommation le jour\n• Besoin d'autonomie\n\n⚙️ **FONCTIONNEMENT** :\n1️⃣ CHARGE : Électricité → Énergie chimique\n2️⃣ DÉCHARGE : Énergie chimique → Électricité\n\n📊 **CARACTÉRISTIQUES** :\n• Capacité (kWh) : quantité stockable\n• Profondeur de décharge : % utilisable\n• Durée de vie : nombre de cycles\n\n🔋 **TYPES** :\n\n**Lithium-ion** :\n✅ Léger, longue durée de vie\n❌ Plus cher\n\n**Plomb-acide** :\n✅ Moins cher\n❌ Lourd, durée de vie courte"
+            },
+            
+            // PANNEAUX SOLAIRES
+            "panneaux": {
+                keywords: ["panneau", "panneaux", "module", "modules"],
+                answer: "**PANNEAUX SOLAIRES** ☀️🟦\n\n⚙️ **FONCTIONNEMENT** :\n1️⃣ Photons frappent les cellules\n2️⃣ Électrons se mettent en mouvement\n3️⃣ Création d'un courant continu\n\n📐 **STRUCTURE** :\n• Verre trempé : protection\n• Cellules photovoltaïques : cœur du système\n• Backsheet : protection arrière\n• Cadre aluminium : rigidité\n• Boîte de jonction : connexions\n\n📊 **TYPES** :\n\n**Monocristallin** :\n✅ Meilleur rendement (18-22%)\n⚫ Couleur noire\n\n**Polycristallin** :\n✅ Rendement moyen (15-17%)\n🔵 Couleur bleutée\n\n💡 **CARACTÉRISTIQUES** :\n• Puissance crête (Wc)\n• Garantie : 25-30 ans\n\n🌞 **ORIENTATION** :\n• Plein sud\n• Inclinaison : 30-35° (Maroc)"
+            },
+            
+            // CELLULE PHOTOVOLTAÏQUE
+            "cellule": {
+                keywords: ["cellule", "cellules", "silicium", "type n", "type p", "semi-conducteur"],
+                answer: "**CELLULE PHOTOVOLTAÏQUE** 🔬\n\n🧪 **MATÉRIAU** :\nSemi-conducteur en SILICIUM\n\n⚙️ **STRUCTURE** :\n\n**Zone type N** :\n• Excès d'électrons (négatif)\n• Zone supérieure\n• Dopage au phosphore\n\n**Zone type P** :\n• Déficit d'électrons (positif)\n• Zone inférieure\n• Dopage au bore\n\n**Jonction PN** :\n• Interface entre les deux\n• Crée un champ électrique\n\n⚡ **PRINCIPE** :\n1️⃣ Photons frappent la cellule\n2️⃣ Libèrent des électrons\n3️⃣ Champ électrique les accélère\n4️⃣ Contacts métalliques collectent le courant\n\n📏 **CARACTÉRISTIQUES** :\n• Taille : ~15×15 cm\n• Tension : ~0,5V par cellule\n• Puissance : 4-6W par cellule\n\n🔢 **ASSEMBLAGE** :\nCellule → Module (60/72 cellules) → Panneau → Champ"
+            },
+            
+            // COMPTEUR
+            "compteur": {
+                keywords: ["compteur", "mesure", "production", "consommation"],
+                answer: "**RÔLE DU COMPTEUR** 📊\n\n🔢 **FONCTIONS** :\n\n1️⃣ **Mesure PRODUCTION** :\n• Électricité produite (kWh)\n• Suivi de performance\n\n2️⃣ **Mesure CONSOMMATION** :\n• Électricité consommée\n\n3️⃣ **Mesure INJECTION** :\n• Électricité envoyée au réseau\n• Quand production > consommation\n\n4️⃣ **Mesure SOUTIRAGE** :\n• Électricité prélevée du réseau\n• Quand consommation > production\n\n📱 **TYPES** :\n\n**Compteur intelligent** :\n• Communication à distance\n• Suivi temps réel\n\n**Compteur classique** :\n• Lecture manuelle\n\n📊 **INFORMATIONS** :\n• Puissance instantanée (W)\n• Énergie totale (kWh)\n• Énergie injectée/soutirée"
+            },
+            
+            // CÂBLES
+            "cables": {
+                keywords: ["fil", "fils", "câble", "câbles", "cuivre"],
+                answer: "**RÔLE DES CÂBLES ÉLECTRIQUES** 🔌\n\n⚡ **FONCTION** :\nTransporter le courant entre composants (panneaux → onduleur → compteur → maison).\n\n📏 **CARACTÉRISTIQUES** :\n\n**Section (mm²)** :\n• Plus le courant est fort, plus la section doit être grande\n• Section insuffisante = échauffement + pertes\n\n**Matériau** :\n• Cuivre : meilleur conducteur\n• Aluminium : moins cher, moins bon\n\n**Isolation** :\n• Protection plastique\n• Résistance UV, chaleur\n\n🔍 **DANS L'INSTALLATION** :\n\n**Côté DC** (panneaux → onduleur) :\n• Câbles extérieur\n• Résistance UV\n• Rouge (+) et noir (-)\n\n**Côté AC** (onduleur → maison) :\n• Câbles standard\n• 230V\n• Marron, bleu, vert/jaune\n\n⚠️ **SÉCURITÉ** :\n• Câbles adaptés à la puissance\n• Protection mécanique\n• Mise à la terre obligatoire"
+            },
+            
+            // CHAÎNE ÉNERGÉTIQUE
+            "chaine": {
+                keywords: ["chaîne", "énergétique", "transformation", "étapes"],
+                answer: "**CHAÎNE ÉNERGÉTIQUE SOLAIRE** 🔄\n\n☀️ **PHOTOVOLTAÏQUE** :\n\nÉnergie SOLAIRE (lumière)\n   ↓\nÉnergie ÉLECTRIQUE (DC)\n   ↓ [onduleur]\nÉnergie ÉLECTRIQUE (AC)\n   ↓ [réseau]\nÉnergie UTILE (maison)\n\n🌡️ **THERMIQUE** :\n\nÉnergie SOLAIRE (chaleur)\n   ↓\nÉnergie THERMIQUE (liquide chaud)\n   ↓ [circulateur]\nÉnergie THERMIQUE stockée\n   ↓ [ballon]\nÉnergie UTILE (chaleur)\n\n⚡ **RENDEMENTS** :\n• PV : 15-20%\n• Thermique : 60-80%\n\n💡 **PERTES** :\nChaque étape a son rendement\nOptimisation = minimiser les pertes"
+            },
+            
+            // THERMIQUE - Principe
+            "thermique_principe": {
+                keywords: ["thermique", "chaleur", "eau chaude"],
+                answer: "**ÉNERGIE SOLAIRE THERMIQUE** 🌡️💧\n\n📚 **PRINCIPE** :\nUtilise la CHALEUR du soleil (pas la lumière)\n→ Chauffe directement de l'eau\n\n💡 **ANALOGIE** :\nComme un tuyau d'arrosage au soleil : le tuyau chauffe l'eau !\n\n⚙️ **FONCTIONNEMENT** :\n\n1️⃣ **Capteurs solaires** (toit) :\n• Surface noire capte la chaleur\n• Vitre crée effet de serre\n• Isolation garde la chaleur\n\n2️⃣ **Liquide caloporteur** :\n• Eau + antigel circule dans capteurs\n• Se réchauffe au contact\n\n3️⃣ **Circulateur** (pompe) :\n• Fait circuler le liquide chaud\n• Vers le ballon de stockage\n\n4️⃣ **Ballon de stockage** :\n• Cuve bien isolée\n• Conserve l'eau chaude\n\n5️⃣ **Distribution** :\n• Radiateurs (chauffage)\n• Robinets (eau chaude)\n\n❌ Ne produit PAS d'électricité !"
+            },
+            
+            // CHAUFFE-EAU SOLAIRE
+            "chauffe_eau": {
+                keywords: ["chauffe-eau", "chauffe eau", "ballon", "capteur"],
+                answer: "**COMPOSANTS CHAUFFE-EAU SOLAIRE** 🌞💧\n\n1️⃣ **CAPTEUR SOLAIRE** (toit) :\n\n📐 **Absorbeur** :\n• Plaque et tubes métalliques\n• Captent la chaleur\n\n🏠 **Coffre isolé** :\n• Entoure l'absorbeur\n• Limite les pertes\n\n🪟 **Vitre** :\n• Laisse passer rayons\n• Retient chaleur (effet serre)\n\n━━━━━━━━━━━━━━━━━━━━━━\n\n2️⃣ **BALLON DE STOCKAGE** :\n• Cuve métallique isolée\n• Réserve d'eau sanitaire\n• Eau chaude soutirée remplacée par eau froide\n\n3️⃣ **TUBES CAPTEUR** :\n• Eau + antigel\n• Relient capteurs au ballon\n• Circuit primaire et secondaire\n\n4️⃣ **CIRCULATEUR** :\n• Pompe de circulation\n• Entre capteurs et ballon\n\n5️⃣ **RÉGULATEUR** :\n• Sonde de température\n• Contrôle la circulation"
+            },
+            
+            // RENDEMENT
+            "rendement": {
+                keywords: ["rendement", "efficacité", "performance"],
+                answer: "**RENDEMENT SOLAIRE** 📊\n\n☀️ **PHOTOVOLTAÏQUE** :\n• Rendement : 15-20%\n• Signifie : 15-20% de l'énergie solaire → électricité\n• Dépend de : température, orientation, ombres\n• ⚠️ Plus il fait chaud, moins bon le rendement !\n\n🌡️ **THERMIQUE** :\n• Rendement : 60-80%\n• Signifie : 60-80% de l'énergie solaire → chaleur\n• Meilleur rendement que PV !\n• Dépend de : isolation, température eau\n\n💡 **FACTEURS INFLUENÇANT** :\n• Orientation (plein sud idéal)\n• Inclinaison (30-35° Maroc)\n• Propreté des surfaces\n• Ombres\n• Température ambiante\n\n📊 **POURQUOI THERMIQUE > PV ?**\nTransfert direct de chaleur\nvs\nConversion lumière → électricité (pertes)"
+            },
+            
+            // AVANTAGES
+            "avantages": {
+                keywords: ["avantages", "inconvénients", "points forts", "limites"],
+                answer: "**AVANTAGES & INCONVÉNIENTS** ⚖️\n\n✅ **AVANTAGES COMMUNS** :\n• Énergie RENOUVELABLE inépuisable\n• Peu polluant à l'usage\n• Pas de CO2 pendant fonctionnement\n• Autonomie énergétique\n• Coûts réduits à long terme\n\n⚠️ **INCONVÉNIENTS COMMUNS** :\n• Coût d'installation élevé\n• Dépend de l'ensoleillement\n• Ne fonctionne pas la nuit\n• Besoin de grandes surfaces\n\n━━━━━━━━━━━━━━━━━━━━━━\n\n**PHOTOVOLTAÏQUE** :\n❌ Matériaux rares (silicium)\n❌ Difficile à recycler\n❌ Batteries polluantes\n\n**THERMIQUE** :\n❌ Risque de gel (besoin antigel)\n❌ Moins efficace en hiver\n❌ Système circulation nécessaire"
+            }
+        };
+        
+        // ===== FONCTIONS CHATBOT =====
+        const chatMessages = document.getElementById('chatMessages');
+        const userInput = document.getElementById('userInput');
+        
+        function addMessage(text, isBot = true) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${isBot ? 'bot' : 'user'}`;
+            
+            const avatar = document.createElement('div');
+            avatar.className = 'message-avatar';
+            avatar.textContent = isBot ? '👨‍🏫' : '👤';
+            
+            const bubble = document.createElement('div');
+            bubble.className = 'message-bubble';
+            bubble.innerHTML = text.replace(/\n/g, '<br>').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+            
+            messageDiv.appendChild(avatar);
+            messageDiv.appendChild(bubble);
+            chatMessages.appendChild(messageDiv);
+            
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+        
+        function showTyping() {
+            const typingDiv = document.createElement('div');
+            typingDiv.className = 'message bot';
+            typingDiv.id = 'typing';
+            
+            const avatar = document.createElement('div');
+            avatar.className = 'message-avatar';
+            avatar.textContent = '👨‍🏫';
+            
+            const indicator = document.createElement('div');
+            indicator.className = 'typing-indicator show';
+            indicator.innerHTML = '<span></span><span></span><span></span>';
+            
+            typingDiv.appendChild(avatar);
+            typingDiv.appendChild(indicator);
+            chatMessages.appendChild(typingDiv);
+            
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+        
+        function hideTyping() {
+            const typing = document.getElementById('typing');
+            if (typing) typing.remove();
+        }
+        
+        function findAnswer(question) {
+            question = question.toLowerCase().trim();
+            
+            let bestMatch = null;
+            let maxScore = 0;
+            
+            for (const [key, data] of Object.entries(knowledgeBase)) {
+                const matchCount = data.keywords.filter(keyword => 
+                    question.includes(keyword.toLowerCase())
+                ).length;
+                
+                if (matchCount > maxScore) {
+                    maxScore = matchCount;
+                    bestMatch = data.answer;
+                }
+            }
+            
+            if (bestMatch && maxScore > 0) {
+                return bestMatch;
+            }
+            
+            return "🤔 Désolé, je suis spécialisé UNIQUEMENT en énergie solaire !\n\nJe peux t'aider sur :\n\n☀️⚡ **PHOTOVOLTAÏQUE** :\n• Principe de fonctionnement\n• Composants (panneaux, onduleur, batteries...)\n• Cellules photovoltaïques\n\n🌡️💧 **THERMIQUE** :\n• Principe de fonctionnement\n• Composants chauffe-eau solaire\n• Capteurs et ballon\n\n⚖️ **COMPARAISON** :\n• Différence PV vs Thermique\n• Avantages et inconvénients\n\nClique sur une suggestion ci-dessous ! ☀️";
+        }
+        
+        function sendMessage() {
+            const question = userInput.value.trim();
+            if (!question) return;
+            
+            addMessage(question, false);
+            userInput.value = '';
+            
+            showTyping();
+            
+            setTimeout(() => {
+                hideTyping();
+                const answer = findAnswer(question);
+                addMessage(answer, true);
+            }, 800);
+        }
+        
+        function askQuestion(question) {
+            userInput.value = question;
+            sendMessage();
+        }
+        
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        }
+        
+        // Message d'accueil
+        setTimeout(() => {
+            addMessage("Bonjour ! ☀️\n\nJe suis Le Sage, ton expert en énergie solaire. Je connais TOUT sur le photovoltaïque et le thermique !\n\nPose-moi tes questions ou clique sur une suggestion. 🌞");
+        }, 1000);
+    </script>
+</body>
+</html>
